@@ -111,7 +111,11 @@ export interface PostalCode {
 }
 
 export enum Region {
-  Americas = "Americas",
+  Af = "Africa",
+  Am = "Americas",
+  As = "Asia",
+  Eu = "Europe",
+  Oc = "Oceania",
 }
 
 export enum StartOfWeek {
