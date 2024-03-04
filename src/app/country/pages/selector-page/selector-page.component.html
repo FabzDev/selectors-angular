@@ -8,7 +8,7 @@
     <div class="col">
       <label class="form-label">Continente:</label>
       <select class="form-control" formControlName="region">
-        <option value="def">Selecciona una opción</option>
+        <option value="def">Selecciona una continente</option>
         <option *ngFor="let region of regions" [value]="region">{{region}}</option>
       </select>
     </div>
@@ -19,8 +19,8 @@
     <div class="col">
       <label class="form-label">País:</label>
       <select class="form-control" formControlName="country">
-        <option value="def">Selecciona una opción</option>
-        <option *ngFor="let country of countries" [value]="country.cca3">{{country.name.common}}</option>
+        <option value="def">Selecciona un país</option>
+        <option *ngFor="let country of countries" [value]="country.cca3">{{country.name}}</option>
       </select>
     </div>
   </div>
@@ -28,15 +28,25 @@
   <div class="row mb-3">
     <div class="col">
       <label class="form-label">Fronteras:</label>
+      <select class="form-control" formControlName="borders">
+        <option value="def">Selecciona un país</option>
+        <option *ngFor="let border of borders" [value]="border">{{border}}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">Fronteras:</label>
       <ul class="list-group">
         <li *ngFor="let border of borders" class="list-group-item">{{border}}</li>
       </ul>
     </div>
-  </div>
+  </div> -->
 
 
   <h1>Formulario</h1>
-  <!-- <option>{{myForm.value | json}}</option> -->
-  <option>{{myForm.value.country | json}}</option>
+  <option>{{myForm.value | json}}</option>
+  <!-- <option>{{myForm.value.country | json}}</option> -->
 
 </form>

@@ -1,15 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  Country,
-  Region,
-  SmallCountry,
-} from '../../interfaces/country.interface';
+import { Region, SmallCountry } from '../../interfaces/country.interface';
 import { CountriesService } from '../../services/countries.service';
-import { Observable, map, of, switchMap, tap } from 'rxjs';
-import { JsonPipe } from '@angular/common';
-
-const baseURL = 'https://restcountries.com/v3.1/';
+import { Observable, map, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'country-selector-page',
@@ -28,13 +21,23 @@ export class SelectorPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.myForm.get('region')?.setValue('def')
+    this.myForm.get('country')?.setValue('def')
+    this.myForm.get('borders')?.setValue('def')
+
     this.getCountries().subscribe((countries) => {
+      this.countriesService.borders = [];
+      this.myForm.get('borders')?.setValue('def')
+
       this.countriesService.countries = countries.sort((a, b) =>
-        a.name.common > b.name.common ? 1 : -1
+        a.name > b.name ? 1 : -1
       );
     });
 
-    this.getBorders().subscribe((borders) => this.countriesService.borders = borders);
+    this.getBorders().subscribe((borders) => {
+      this.myForm.get('borders')?.setValue('def')
+      this.countriesService.borders = borders
+    });
   }
 
   get regions(): Region[] {
@@ -53,6 +56,7 @@ export class SelectorPageComponent implements OnInit {
     return this.myForm
       .get('region')!.valueChanges
       .pipe(
+        tap( () => this.myForm.get('country')!.setValue('def')),
         switchMap((region) => this.countriesService.getCountriesByRegion(region))
       );
   }
