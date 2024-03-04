@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Region, SmallCountry } from '../../interfaces/country.interface';
 import { CountriesService } from '../../services/countries.service';
-import { Observable, map, switchMap, tap } from 'rxjs';
+import { Observable, map, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'country-selector-page',
@@ -60,24 +60,45 @@ export class SelectorPageComponent implements OnInit {
     );
   }
 
+  // getBorders(): Observable<string[]> {
+  //   return this.myForm.get('country')!.valueChanges.pipe(
+  //     switchMap((cca3) =>
+  //       this.countriesService.countries.filter(
+  //         (country) => country.cca3 == cca3
+  //       )
+  //     ),
+  //     map((country) => country.borders),
+  //     map((borders) =>
+  //       borders
+  //         .map((borde) =>
+  //           this.countries.find((country) => country.cca3 === borde)
+  //         )
+  //         .map((country) => {
+  //           if (!country) return '';
+  //           return country.name;
+  //         })
+  //     )
+  //   );
+  // }
+
+
+  // myForm: reactive form
+  // cca3: codigo de pais
+  // this.countries: arreglo de paises
+  // pais: {name:'',cca3:'',borders:[]}
+  //
   getBorders(): Observable<string[]> {
     return this.myForm.get('country')!.valueChanges.pipe(
-      switchMap((cca3) =>
-        this.countriesService.countries.filter(
-          (country) => country.cca3 == cca3
-        )
-      ),
-      map((country) => country.borders),
-      map((borders) =>
-        borders
-          .map((borde) =>
-            this.countries.find((country) => country.cca3 === borde)
-          )
-          .map((country) => {
-            if (!country) return '';
-            return country.name;
-          })
-      )
-    );
+      map( cca3 => this.getSmallCountry(this.countries, cca3)),
+      map( country => country.borders),
+      map( borders => borders.map( border => this.getSmallCountry(this.countries, border))),
+      map( countries => countries.map( country => country.name))
+    )
+  }
+
+  getSmallCountry(listaDePaises: SmallCountry[], cca3: string): SmallCountry  {
+    const country = listaDePaises.find( pais => pais.cca3 == cca3);
+    if (!country) return {name:'',cca3:'',borders:[]}
+    return country;
   }
 }
