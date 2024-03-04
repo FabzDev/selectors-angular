@@ -21,13 +21,13 @@ export class SelectorPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.myForm.get('region')?.setValue('def')
-    this.myForm.get('country')?.setValue('def')
-    this.myForm.get('borders')?.setValue('def')
+    this.myForm.get('region')?.setValue('def');
+    this.myForm.get('country')?.setValue('def');
+    this.myForm.get('borders')?.setValue('def');
 
     this.getCountries().subscribe((countries) => {
       this.countriesService.borders = [];
-      this.myForm.get('borders')?.setValue('def')
+      this.myForm.get('borders')?.setValue('def');
 
       this.countriesService.countries = countries.sort((a, b) =>
         a.name > b.name ? 1 : -1
@@ -35,8 +35,9 @@ export class SelectorPageComponent implements OnInit {
     });
 
     this.getBorders().subscribe((borders) => {
-      this.myForm.get('borders')?.setValue('def')
-      this.countriesService.borders = borders
+      this.myForm.get('borders')?.setValue('def');
+
+      this.countriesService.borders = borders.sort();
     });
   }
 
@@ -53,19 +54,30 @@ export class SelectorPageComponent implements OnInit {
   }
 
   getCountries(): Observable<SmallCountry[]> {
-    return this.myForm
-      .get('region')!.valueChanges
-      .pipe(
-        tap( () => this.myForm.get('country')!.setValue('def')),
-        switchMap((region) => this.countriesService.getCountriesByRegion(region))
-      );
+    return this.myForm.get('region')!.valueChanges.pipe(
+      tap(() => this.myForm.get('country')!.setValue('def')),
+      switchMap((region) => this.countriesService.getCountriesByRegion(region))
+    );
   }
 
   getBorders(): Observable<string[]> {
-    return this.myForm.get('country')!.valueChanges
-    .pipe(
-      switchMap(cca3 => this.countriesService.countries.filter( (country) => country.cca3 == cca3)),
-      map((country) => country.borders)
+    return this.myForm.get('country')!.valueChanges.pipe(
+      switchMap((cca3) =>
+        this.countriesService.countries.filter(
+          (country) => country.cca3 == cca3
+        )
+      ),
+      map((country) => country.borders),
+      map((borders) =>
+        borders
+          .map((borde) =>
+            this.countries.find((country) => country.cca3 === borde)
+          )
+          .map((country) => {
+            if (!country) return '';
+            return country.name;
+          })
+      )
     );
   }
 }
